@@ -25,7 +25,8 @@ const (
 	UserService_GetUserProfile_FullMethodName    = "/user.UserService/GetUserProfile"
 	UserService_UpdateUserProfile_FullMethodName = "/user.UserService/UpdateUserProfile"
 	UserService_LogoutUser_FullMethodName        = "/user.UserService/LogoutUser"
-	UserService_ValidateToken_FullMethodName     = "/user.UserService/ValidateToken"
+	UserService_GetByUserEmail_FullMethodName    = "/user.UserService/GetByUserEmail"
+	UserService_StoreRefreshToken_FullMethodName = "/user.UserService/StoreRefreshToken"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -38,7 +39,8 @@ type UserServiceClient interface {
 	GetUserProfile(ctx context.Context, in *GetUserProfileRequest, opts ...grpc.CallOption) (*GetUserProfileResponse, error)
 	UpdateUserProfile(ctx context.Context, in *UpdateUserProfileRequest, opts ...grpc.CallOption) (*UpdateUserProfileResponse, error)
 	LogoutUser(ctx context.Context, in *LogoutUserRequest, opts ...grpc.CallOption) (*LogoutUserResponse, error)
-	ValidateToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error)
+	GetByUserEmail(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*RegisterUserResponse, error)
+	StoreRefreshToken(ctx context.Context, in *StoreRefreshTokenReq, opts ...grpc.CallOption) (*StoreRefreshTokenRes, error)
 }
 
 type userServiceClient struct {
@@ -109,10 +111,20 @@ func (c *userServiceClient) LogoutUser(ctx context.Context, in *LogoutUserReques
 	return out, nil
 }
 
-func (c *userServiceClient) ValidateToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error) {
+func (c *userServiceClient) GetByUserEmail(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*RegisterUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ValidateTokenResponse)
-	err := c.cc.Invoke(ctx, UserService_ValidateToken_FullMethodName, in, out, cOpts...)
+	out := new(RegisterUserResponse)
+	err := c.cc.Invoke(ctx, UserService_GetByUserEmail_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) StoreRefreshToken(ctx context.Context, in *StoreRefreshTokenReq, opts ...grpc.CallOption) (*StoreRefreshTokenRes, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StoreRefreshTokenRes)
+	err := c.cc.Invoke(ctx, UserService_StoreRefreshToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +141,8 @@ type UserServiceServer interface {
 	GetUserProfile(context.Context, *GetUserProfileRequest) (*GetUserProfileResponse, error)
 	UpdateUserProfile(context.Context, *UpdateUserProfileRequest) (*UpdateUserProfileResponse, error)
 	LogoutUser(context.Context, *LogoutUserRequest) (*LogoutUserResponse, error)
-	ValidateToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error)
+	GetByUserEmail(context.Context, *LoginUserRequest) (*RegisterUserResponse, error)
+	StoreRefreshToken(context.Context, *StoreRefreshTokenReq) (*StoreRefreshTokenRes, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -155,8 +168,11 @@ func (UnimplementedUserServiceServer) UpdateUserProfile(context.Context, *Update
 func (UnimplementedUserServiceServer) LogoutUser(context.Context, *LogoutUserRequest) (*LogoutUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LogoutUser not implemented")
 }
-func (UnimplementedUserServiceServer) ValidateToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ValidateToken not implemented")
+func (UnimplementedUserServiceServer) GetByUserEmail(context.Context, *LoginUserRequest) (*RegisterUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetByUserEmail not implemented")
+}
+func (UnimplementedUserServiceServer) StoreRefreshToken(context.Context, *StoreRefreshTokenReq) (*StoreRefreshTokenRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StoreRefreshToken not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -279,20 +295,38 @@ func _UserService_LogoutUser_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_ValidateToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ValidateTokenRequest)
+func _UserService_GetByUserEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).ValidateToken(ctx, in)
+		return srv.(UserServiceServer).GetByUserEmail(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_ValidateToken_FullMethodName,
+		FullMethod: UserService_GetByUserEmail_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).ValidateToken(ctx, req.(*ValidateTokenRequest))
+		return srv.(UserServiceServer).GetByUserEmail(ctx, req.(*LoginUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_StoreRefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StoreRefreshTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).StoreRefreshToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_StoreRefreshToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).StoreRefreshToken(ctx, req.(*StoreRefreshTokenReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -329,8 +363,12 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_LogoutUser_Handler,
 		},
 		{
-			MethodName: "ValidateToken",
-			Handler:    _UserService_ValidateToken_Handler,
+			MethodName: "GetByUserEmail",
+			Handler:    _UserService_GetByUserEmail_Handler,
+		},
+		{
+			MethodName: "StoreRefreshToken",
+			Handler:    _UserService_StoreRefreshToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

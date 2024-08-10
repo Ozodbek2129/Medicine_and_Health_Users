@@ -1,0 +1,303 @@
+basePath: /
+definitions:
+  user.GetUserProfileResponse:
+    properties:
+      created_at:
+        type: string
+      date_of_birthday:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  user.LoginUserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  user.LogoutUserRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  user.LogoutUserResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  user.RefreshTokenResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  user.RegisterUserRequest:
+    properties:
+      date_of_birthday:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    type: object
+  user.RegisterUserResponse:
+    properties:
+      created_at:
+        type: string
+      date_of_birthday:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+    type: object
+host: localhost:1001
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server for a user service.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: User Service API
+  version: "1.0"
+paths:
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user with username and password
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.LoginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Login user
+      tags:
+      - User
+  /user/logout:
+    put:
+      consumes:
+      - application/json
+      description: Foydalanuvchini tizimdan chiqarish
+      parameters:
+      - description: LogoutUserRequest
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/user.LogoutUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.LogoutUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Logout user
+      tags:
+      - Users
+  /user/profile/{email}:
+    get:
+      consumes:
+      - application/json
+      description: Foydalanuvchi profilini olish
+      parameters:
+      - description: Foydalanuvchi email manzili
+        in: path
+        name: email
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/user.GetUserProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get user profile
+      tags:
+      - Users
+  /user/profile/update/{id}/{email}/{password}/{first_name}/{last_name}/{date_of_birthday}/{gender}/{role}:
+    put:
+      consumes:
+      - application/json
+      description: Foydalanuvchi profilini yangilash funksiyasi, ma'lumotlar parametrlar
+        orqali olinadi va yangilanadi. Agar parametr bo'sh bo'lsa, eski qiymat saqlanib
+        qoladi.
+      parameters:
+      - description: Foydalanuvchi IDsi
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Foydalanuvchi email manzili
+        in: path
+        name: email
+        type: string
+      - description: Foydalanuvchi paroli
+        in: path
+        name: password
+        type: string
+      - description: Foydalanuvchining ismi
+        in: path
+        name: first_name
+        type: string
+      - description: Foydalanuvchining familiyasi
+        in: path
+        name: last_name
+        type: string
+      - description: Foydalanuvchining tug'ilgan sanasi (YYYY-MM-DD formatida)
+        in: path
+        name: date_of_birthday
+        type: string
+      - description: Foydalanuvchining jinsi (male/female)
+        in: path
+        name: gender
+        type: string
+      - description: Foydalanuvchining roli (patient/doctor/admin)
+        in: path
+        name: role
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Muvaffaqiyatli yangilangan profil ma'lumotlari
+          schema:
+            type: string
+        "400":
+          description: Yaroqsiz so'rov
+          schema:
+            type: string
+        "500":
+          description: Server xatosi
+          schema:
+            type: string
+      summary: Foydalanuvchi profilini yangilash
+      tags:
+      - Foydalanuvchi
+  /user/refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint refreshes the signing key and returns a confirmation
+        message.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.RefreshTokenResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Refreshe Token
+      tags:
+      - authentication
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with username and password
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.RegisterUserRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/user.RegisterUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Register a new user
+      tags:
+      - User
+swagger: "2.0"
