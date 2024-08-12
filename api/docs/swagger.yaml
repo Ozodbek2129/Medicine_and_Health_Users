@@ -42,7 +42,9 @@ definitions:
     type: object
   user.RefreshTokenResponse:
     properties:
-      message:
+      accsess_token:
+        type: string
+      resresh_token:
         type: string
     type: object
   user.RegisterUserRequest:
@@ -250,26 +252,41 @@ paths:
       summary: Foydalanuvchi profilini yangilash
       tags:
       - Foydalanuvchi
-  /user/refresh-token:
+  /user/refresh-token/{email}/{password}:
     post:
       consumes:
       - application/json
-      description: This endpoint refreshes the signing key and returns a confirmation
-        message.
+      description: Refreshes the JWT token by validating the user's credentials and
+        generating a new token.
+      parameters:
+      - description: User Email
+        in: path
+        name: email
+        required: true
+        type: string
+      - description: User Password
+        in: path
+        name: password
+        required: true
+        type: string
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "202":
+          description: Returns the new JWT and Refresh Token
           schema:
             $ref: '#/definitions/user.RefreshTokenResponse'
+        "401":
+          description: 'error": "Invalid credentials'
+          schema:
+            type: string
         "500":
           description: Internal Server Error
           schema:
             type: string
-      summary: Refreshe Token
+      summary: Refresh the JWT token
       tags:
-      - authentication
+      - Authentication
   /user/register:
     post:
       consumes:

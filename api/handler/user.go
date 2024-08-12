@@ -107,27 +107,62 @@ func (h Handler) LoginUser(c *gin.Context) {
 	c.JSON(http.StatusAccepted, token)
 }
 
-// @Summary Refreshe Token
-// @Description This endpoint refreshes the signing key and returns a confirmation message.
-// @Tags authentication
+// @Summary Refresh the JWT token
+// @Description Refreshes the JWT token by validating the user's credentials and generating a new token.
+// @Tags Authentication
 // @Accept json
 // @Produce json
-// @Success 200 {object} user.RefreshTokenResponse
-// @Failure 500 {object} string
-// @Router /user/refresh-token [post]
+// @Param email path string true "User Email"
+// @Param password path string true "User Password"
+// @Success 202 {object} user.RefreshTokenResponse "Returns the new JWT and Refresh Token"
+// @Failure 401 {object} string "error": "Invalid credentials"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /user/refresh-token/{email}/{password} [post]
 func (h Handler) RefreshToken(c *gin.Context) {
-	req := pb.RefreshTokenRequest{}
+	req := pb.RefreshTokenRequest{
+		Email: c.Param("email"),
+		Password: c.Param("password"),
+	}
 
-	resp, err := h.AuthUser.RefreshToken(c, &req)
+	req1 := pb.LoginUserRequest{
+		Email: req.Email,
+		Password: req.Password,
+	}
+
+	user, err := h.AuthUser.GetByUserEmail(c, &req1)
 	if err != nil {
-		h.Log.Error(fmt.Sprintf("Api da malumotlarni olishda xatolik: %v", err))
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": "Api da malumotlarni olishda xatolik: " + err.Error(),
-		})
+		h.Log.Error(fmt.Sprintf("GetbyUserda xatolik: %v", err))
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(200, resp)
+	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+		h.Log.Error(fmt.Sprintf("passwordni tekshirishda xatolik: %v", err))
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	token := token.GenerateJWT(&model.LoginResponse{
+		Id:         user.Id,
+		First_name: user.FirstName,
+		Gender:     user.Gender,
+		Last_name:  user.LastName,
+		Email:      user.Email,
+		Role:       user.Role,
+	})
+
+	_, err = h.AuthUser.StoreRefreshToken(context.Background(), &pb.StoreRefreshTokenReq{
+		UserId:       user.Id,
+		RefreshToken: token.RefreshToken,
+	})
+
+	if err != nil {
+		h.Log.Error(fmt.Sprintf("storefreshtokenda xatolik: %v", err))
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusAccepted, token)
 }
 
 // @Summary Get user profile

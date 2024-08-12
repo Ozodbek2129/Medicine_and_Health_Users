@@ -251,9 +251,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/refresh-token": {
+        "/user/refresh-token/{email}/{password}": {
             "post": {
-                "description": "This endpoint refreshes the signing key and returns a confirmation message.",
+                "description": "Refreshes the JWT token by validating the user's credentials and generating a new token.",
                 "consumes": [
                     "application/json"
                 ],
@@ -261,14 +261,36 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "authentication"
+                    "Authentication"
                 ],
-                "summary": "Refreshe Token",
+                "summary": "Refresh the JWT token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User Email",
+                        "name": "email",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User Password",
+                        "name": "password",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "202": {
+                        "description": "Returns the new JWT and Refresh Token",
                         "schema": {
                             "$ref": "#/definitions/user.RefreshTokenResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "error\": \"Invalid credentials",
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -393,7 +415,10 @@ const docTemplate = `{
         "user.RefreshTokenResponse": {
             "type": "object",
             "properties": {
-                "message": {
+                "accsess_token": {
+                    "type": "string"
+                },
+                "resresh_token": {
                     "type": "string"
                 }
             }

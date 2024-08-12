@@ -31,17 +31,6 @@ func (ms *MedicineService) RegisterUser(ctx context.Context, req *pb.RegisterUse
 	return resp,nil
 }
 
-func (ms *MedicineService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequest) (*pb.RefreshTokenResponse,error) {
-	err:=ms.user.RefReshToken(ctx,req)
-	if err!=nil{
-		ms.log.Error(fmt.Sprintf("Refresh token service da xatolik: %v",err))
-		return nil,err
-	}
-	return &pb.RefreshTokenResponse{
-		Message: "SIGNING_KEY yangilandi endi login qiling.",
-	},nil
-}
-
 func (ms *MedicineService) GetUserProfile(ctx context.Context,req *pb.GetUserProfileRequest) (*pb.GetUserProfileResponse,error){
 	resp,err:=ms.user.GetUserProfile(ctx,req)
 	if err!=nil{

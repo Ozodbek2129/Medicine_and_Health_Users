@@ -31,7 +31,7 @@ func NewRouter(h *handler.Handler) *gin.Engine{
 	{
 		user.POST("/register",h.Register)
 		user.POST("/login",h.LoginUser)
-		user.POST("/refresh-token",h.RefreshToken)
+		user.POST("/refresh-token/:email/:password",h.RefreshToken)
 		user.GET("/profile/:email",h.GetUserProfile)
 		user.PUT("/profile/update/:id/:email/:password/:first_name/:last_name/:date_of_birthday/:gender/:role",h.UpdateUserProfile)
 		user.PUT("/logout",h.LogoutUser)

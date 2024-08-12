@@ -5,14 +5,11 @@ import (
 	"database/sql"
 	"fmt"
 	"log/slog"
-	"math/rand"
-	"os"
 	"time"
 	pb "user_medic/genproto/user"
 	"user_medic/pkg/logger"
 
 	"github.com/google/uuid"
-	"github.com/joho/godotenv"
 )
 
 type MedicineUser struct {
@@ -95,55 +92,7 @@ func (m *MedicineUser) StoreRefreshToken(ctx context.Context, req *pb.StoreRefre
 	return nil
 }
 
-func (s *MedicineUser) RefReshToken(ctx context.Context, req *pb.RefreshTokenRequest) error {
-	err := godotenv.Load(".env")
-	if err != nil {
-		s.log.Error(fmt.Sprintf(".env faylini yuklashda xatolik yuz berdi: %v", err))
-		return fmt.Errorf(".env faylini yuklashda xatolik yuz berdi")
-	}
-
-	const charset = "abcdefghijkQWERTYU*+_)(*&^%$#@lmnopqrstuvwxyz!@#$%^&" + "ABCD!@#$%^&*()_+EFGHIJKLMNOP(*&^%$QRSTUVW@#$%D@#$%^&*()_YZ0123456789"
-
-	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
-	newSigningKey := stringWithCharset(10, charset, seededRand)
-
-	err = os.Setenv("SIGNING_KEY", newSigningKey)
-	if err != nil {
-		s.log.Error(fmt.Sprintf("Yangi SIGNING_KEY sozlamasida xatolik yuz berdi: %v", err))
-		return fmt.Errorf("yangi SIGNING_KEY sozlamasida xatolik yuz berdi")
-	}
-
-	err = godotenv.Write(map[string]string{
-		"USER_SERVICE": os.Getenv("USER_SERVICE"),
-		"USER_ROUTER":  os.Getenv("USER_ROUTER"),
-		"DB_USER":      os.Getenv("DB_USER"),
-		"DB_HOST":      os.Getenv("DB_HOST"),
-		"DB_NAME":      os.Getenv("DB_NAME"),
-		"DB_PASSWORD":  os.Getenv("DB_PASSWORD"),
-		"DB_PORT":      os.Getenv("DB_PORT"),
-		"SIGNING_KEY":  newSigningKey,
-	}, ".env")
-
-	if err != nil {
-		s.log.Error(fmt.Sprintf(".env fayliga yozishda xatolik yuz berdi: %v", err))
-		return fmt.Errorf(".env fayliga yozishda xatolik yuz berdi")
-	}
-
-	s.log.Info("SIGNING_KEY muvaffaqiyatli yangilandi")
-
-	return nil
-}
-
-func stringWithCharset(length int, charset string, seededRand *rand.Rand) string {
-	b := make([]byte, length)
-	for i := range b {
-		b[i] = charset[seededRand.Intn(len(charset))]
-	}
-	return string(b)
-}
-
-
-func (m *MedicineUser) GetUserProfile(ctx context.Context,req *pb.GetUserProfileRequest) (*pb.GetUserProfileResponse,error){
+func (m *MedicineUser) GetUserProfile(ctx context.Context, req *pb.GetUserProfileRequest) (*pb.GetUserProfileResponse, error) {
 	resp := pb.GetUserProfileResponse{}
 	query := `select 
 				id, email, password_hash, first_name, 
@@ -163,8 +112,8 @@ func (m *MedicineUser) GetUserProfile(ctx context.Context,req *pb.GetUserProfile
 	return &resp, nil
 }
 
-func (m *MedicineUser) UpdateUserProfile(ctx context.Context,req *pb.UpdateUserProfileRequest)(*pb.UpdateUserProfileResponse,error){
-	query:=`UPDATE 
+func (m *MedicineUser) UpdateUserProfile(ctx context.Context, req *pb.UpdateUserProfileRequest) (*pb.UpdateUserProfileResponse, error) {
+	query := `UPDATE 
 				users
 			SET 
 				email = $1, password_hash = $2, first_name = $3, 
@@ -172,21 +121,21 @@ func (m *MedicineUser) UpdateUserProfile(ctx context.Context,req *pb.UpdateUserP
 			WHERE 
 				id = $9`
 
-	_,err:=m.db.ExecContext(ctx,query,req.Email,req.Password,req.FirstName,req.LastName,
-							req.DateOfBirthday,req.Gender,req.Role,time.Now(),req.Id)
+	_, err := m.db.ExecContext(ctx, query, req.Email, req.Password, req.FirstName, req.LastName,
+		req.DateOfBirthday, req.Gender, req.Role, time.Now(), req.Id)
 
-	if err!=nil{
-		m.log.Error(fmt.Sprintf("Profile ni yangilashda xatolik: %v",err))
-		return nil,err
+	if err != nil {
+		m.log.Error(fmt.Sprintf("Profile ni yangilashda xatolik: %v", err))
+		return nil, err
 	}
 
 	return &pb.UpdateUserProfileResponse{
 		Message: "Profile muvafiqiyatli yangilandi.",
-	},nil
+	}, nil
 }
 
-func (m *MedicineUser) LogoutUser(ctx context.Context, token *pb.LogoutUserRequest) (*pb.LogoutUserResponse,error) {
-	_, err := m.db.ExecContext(ctx,`
+func (m *MedicineUser) LogoutUser(ctx context.Context, token *pb.LogoutUserRequest) (*pb.LogoutUserResponse, error) {
+	_, err := m.db.ExecContext(ctx, `
 	update 
 		refresh_token 
 	set 
@@ -194,15 +143,15 @@ func (m *MedicineUser) LogoutUser(ctx context.Context, token *pb.LogoutUserReque
 	where 
 		refresh=$2`, time.Now(), token.RefreshToken)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	return &pb.LogoutUserResponse{
 		Message: "Logout succsessfully.",
-	},nil
+	}, nil
 }
 
-func (m *MedicineUser) GetByUserId(ctx context.Context,req *pb.UserId)(*pb.FLResponse,error){
-	query:=`select 
+func (m *MedicineUser) GetByUserId(ctx context.Context, req *pb.UserId) (*pb.FLResponse, error) {
+	query := `select 
 				first_name,last_name
 			from
 				users
@@ -210,15 +159,15 @@ func (m *MedicineUser) GetByUserId(ctx context.Context,req *pb.UserId)(*pb.FLRes
 				id=$1`
 
 	var res pb.FLResponse
-	err:=m.db.QueryRowContext(ctx,query,req.Userid).Scan(&res.FirstName,&res.LastName)
-	if err!=nil{
-		m.log.Error(fmt.Sprintf("first name va last name ni olishda xatolik: %v",err))
-		return nil,err
+	err := m.db.QueryRowContext(ctx, query, req.Userid).Scan(&res.FirstName, &res.LastName)
+	if err != nil {
+		m.log.Error(fmt.Sprintf("first name va last name ni olishda xatolik: %v", err))
+		return nil, err
 	}
 	return &pb.FLResponse{
 		FirstName: res.FirstName,
-		LastName: res.LastName,
-	},nil
+		LastName:  res.LastName,
+	}, nil
 }
 
 func (u *MedicineUser) IdCheck(req *pb.UserId) (*pb.Response, error) {

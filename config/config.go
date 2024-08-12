@@ -9,14 +9,15 @@ import (
 )
 
 type Config struct {
-	USER_SERVICE string
-	USER_ROUTER  string
-	DB_HOST      string
-	DB_PORT      int
-	DB_PASSWORD  string
-	DB_NAME      string
-	DB_USER      string
-	SIGNING_KEY  string
+	USER_SERVICE  string
+	USER_ROUTER   string
+	DB_HOST       string
+	DB_PORT       int
+	DB_PASSWORD   string
+	DB_NAME       string
+	DB_USER       string
+	SIGNING_KEY   string
+	REFRESH_TOKEN string
 }
 
 func Load() Config {
@@ -32,6 +33,7 @@ func Load() Config {
 	config.DB_NAME = cast.ToString(Coalesce("DB_NAME", "medicine_user"))
 	config.DB_PASSWORD = cast.ToString(Coalesce("DB_PASSWORD", "salom"))
 	config.SIGNING_KEY = cast.ToString(Coalesce("SIGNING_KEY", "989es94sgs6gs9g4sgss"))
+	config.REFRESH_TOKEN = cast.ToString(Coalesce("REFRESH_TOKEN","fghj5$%^&4ghjkFGHJ"))
 	config.DB_PORT = cast.ToInt(Coalesce("DB_PORT", 5432))
 
 	return config
