@@ -40,3 +40,6 @@ time=2024-08-10T20:27:01.089+05:00 level=ERROR msg="Refresh token ni bazaga qush
 time=2024-08-10T23:06:44.787+05:00 level=ERROR msg="Email buyicha xatolik: sql: no rows in result set"
 time=2024-08-10T23:06:44.788+05:00 level=ERROR msg="GetBy User Email service da xatolik: sql: no rows in result set"
 time=2024-08-10T23:06:44.788+05:00 level=ERROR msg="GetByUserda xatolik: rpc error: code = Unknown desc = sql: no rows in result set"
+time=2024-08-12T12:24:58.598+05:00 level=ERROR msg="Registerda bazdaga qushishda xatolik: pq: invalid input syntax for type date: \"string\""
+time=2024-08-12T12:24:58.598+05:00 level=ERROR msg="Register serviceda xatolik: pq: invalid input syntax for type date: \"string\""
+time=2024-08-12T12:24:58.598+05:00 level=ERROR msg="Foydalanuvchi malumotlarni bazga yuborishda xatolik: rpc error: code = Unknown desc = pq: invalid input syntax for type date: \"string\""

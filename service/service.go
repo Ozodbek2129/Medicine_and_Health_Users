@@ -86,3 +86,21 @@ func (ms *MedicineService) StoreRefreshToken(ctx context.Context, req *pb.StoreR
 	}
 	return nil,nil
 }
+
+func (ms *MedicineService) GetByUserId(ctx context.Context,req *pb.UserId)(*pb.FLResponse,error){
+	resp,err:=ms.user.GetByUserId(ctx,req)
+	if err!=nil{
+		ms.log.Error(fmt.Sprintf("Store Refresh Token service da xatolik: %v",err))
+		return nil,err
+	}
+	return resp,nil
+}
+
+func (ms *MedicineService) IdCheck(ctx context.Context,req *pb.UserId)(*pb.Response,error){
+	resp,err:=ms.user.IdCheck(req)
+	if err!=nil{
+		ms.log.Error(fmt.Sprintf("yuborilgan id bazada yuq: %v",err))
+		return nil,err
+	}
+	return resp,nil
+}

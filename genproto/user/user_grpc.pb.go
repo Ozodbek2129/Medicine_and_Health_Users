@@ -27,6 +27,8 @@ const (
 	UserService_LogoutUser_FullMethodName        = "/user.UserService/LogoutUser"
 	UserService_GetByUserEmail_FullMethodName    = "/user.UserService/GetByUserEmail"
 	UserService_StoreRefreshToken_FullMethodName = "/user.UserService/StoreRefreshToken"
+	UserService_GetByUserId_FullMethodName       = "/user.UserService/GetByUserId"
+	UserService_IdCheck_FullMethodName           = "/user.UserService/IdCheck"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -41,6 +43,8 @@ type UserServiceClient interface {
 	LogoutUser(ctx context.Context, in *LogoutUserRequest, opts ...grpc.CallOption) (*LogoutUserResponse, error)
 	GetByUserEmail(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*RegisterUserResponse, error)
 	StoreRefreshToken(ctx context.Context, in *StoreRefreshTokenReq, opts ...grpc.CallOption) (*StoreRefreshTokenRes, error)
+	GetByUserId(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*FLResponse, error)
+	IdCheck(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Response, error)
 }
 
 type userServiceClient struct {
@@ -131,6 +135,26 @@ func (c *userServiceClient) StoreRefreshToken(ctx context.Context, in *StoreRefr
 	return out, nil
 }
 
+func (c *userServiceClient) GetByUserId(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*FLResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FLResponse)
+	err := c.cc.Invoke(ctx, UserService_GetByUserId_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) IdCheck(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Response, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Response)
+	err := c.cc.Invoke(ctx, UserService_IdCheck_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -143,6 +167,8 @@ type UserServiceServer interface {
 	LogoutUser(context.Context, *LogoutUserRequest) (*LogoutUserResponse, error)
 	GetByUserEmail(context.Context, *LoginUserRequest) (*RegisterUserResponse, error)
 	StoreRefreshToken(context.Context, *StoreRefreshTokenReq) (*StoreRefreshTokenRes, error)
+	GetByUserId(context.Context, *UserId) (*FLResponse, error)
+	IdCheck(context.Context, *UserId) (*Response, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -173,6 +199,12 @@ func (UnimplementedUserServiceServer) GetByUserEmail(context.Context, *LoginUser
 }
 func (UnimplementedUserServiceServer) StoreRefreshToken(context.Context, *StoreRefreshTokenReq) (*StoreRefreshTokenRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StoreRefreshToken not implemented")
+}
+func (UnimplementedUserServiceServer) GetByUserId(context.Context, *UserId) (*FLResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetByUserId not implemented")
+}
+func (UnimplementedUserServiceServer) IdCheck(context.Context, *UserId) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IdCheck not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -331,6 +363,42 @@ func _UserService_StoreRefreshToken_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetByUserId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetByUserId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetByUserId(ctx, req.(*UserId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_IdCheck_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).IdCheck(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_IdCheck_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).IdCheck(ctx, req.(*UserId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -369,6 +437,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StoreRefreshToken",
 			Handler:    _UserService_StoreRefreshToken_Handler,
+		},
+		{
+			MethodName: "GetByUserId",
+			Handler:    _UserService_GetByUserId_Handler,
+		},
+		{
+			MethodName: "IdCheck",
+			Handler:    _UserService_IdCheck_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

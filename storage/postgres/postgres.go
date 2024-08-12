@@ -201,3 +201,48 @@ func (m *MedicineUser) LogoutUser(ctx context.Context, token *pb.LogoutUserReque
 	},nil
 }
 
+func (m *MedicineUser) GetByUserId(ctx context.Context,req *pb.UserId)(*pb.FLResponse,error){
+	query:=`select 
+				first_name,last_name
+			from
+				users
+			where
+				id=$1`
+
+	var res pb.FLResponse
+	err:=m.db.QueryRowContext(ctx,query,req.Userid).Scan(&res.FirstName,&res.LastName)
+	if err!=nil{
+		m.log.Error(fmt.Sprintf("first name va last name ni olishda xatolik: %v",err))
+		return nil,err
+	}
+	return &pb.FLResponse{
+		FirstName: res.FirstName,
+		LastName: res.LastName,
+	},nil
+}
+
+func (u *MedicineUser) IdCheck(req *pb.UserId) (*pb.Response, error) {
+	query := `select id from users`
+
+	rows, err := u.db.Query(query)
+	if err != nil {
+		return &pb.Response{B: false}, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return &pb.Response{B: false}, err
+		}
+		if id == req.Userid {
+			return &pb.Response{B: true}, nil
+		}
+	}
+
+	if err = rows.Err(); err != nil {
+		return &pb.Response{B: false}, err
+	}
+
+	return &pb.Response{B: false}, nil
+}
