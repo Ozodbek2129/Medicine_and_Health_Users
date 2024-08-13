@@ -80,3 +80,6 @@ time=2024-08-13T02:27:32.957+05:00 level=ERROR msg="Refresh token ni bazaga qush
 time=2024-08-13T02:28:29.871+05:00 level=ERROR msg="passwordni tekshirishda xatolik: crypto/bcrypt: hashedPassword is not the hash of the given password"
 time=2024-08-13T02:28:51.215+05:00 level=ERROR msg="passwordni tekshirishda xatolik: crypto/bcrypt: hashedPassword is not the hash of the given password"
 time=2024-08-13T02:30:11.127+05:00 level=ERROR msg="Refresh token ni bazaga qushishda xatolik: pq: syntax error at or near \"$2\""
+time=2024-08-13T03:49:06.016+05:00 level=ERROR msg="Refresh token ni bazaga qushishda xatolik: pq: syntax error at or near \"$2\""
+time=2024-08-13T12:11:45.737+05:00 level=ERROR msg="Refresh token ni bazaga qushishda xatolik: pq: syntax error at or near \"$2\""
+time=2024-08-13T13:08:19.408+05:00 level=ERROR msg="Refresh token ni bazaga qushishda xatolik: pq: syntax error at or near \"$2\""
