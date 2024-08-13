@@ -1,0 +1,46 @@
+services:
+  postgres-db:
+    container_name: postgres
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=medicine_user
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/data/postgres
+    networks:
+      - medic
+
+    
+  migrate:
+    image: migrate/migrate
+    networks:
+      - medic
+    volumes:
+      - ./migrations:/migrations
+    depends_on:
+      - postgres-db
+    command: ["-path", "/db/migrations", "-database" ,"postgres://postgres:1234@postgres:5432/medicine_user?sslmode=disable","up"]
+
+  userservice:
+    container_name: user
+    build: .
+    ports:
+      - "50051:50051"
+      - "1001:1001"
+    networks:
+     - medic
+    depends_on:
+      - postgres-db
+      - migrate
+
+networks:
+  medic:
+    external: true
+
+volumes:
+  db:
+  postgres-db:
+  

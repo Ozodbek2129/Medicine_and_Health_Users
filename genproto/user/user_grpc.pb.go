@@ -29,6 +29,9 @@ const (
 	UserService_StoreRefreshToken_FullMethodName = "/user.UserService/StoreRefreshToken"
 	UserService_GetByUserId_FullMethodName       = "/user.UserService/GetByUserId"
 	UserService_IdCheck_FullMethodName           = "/user.UserService/IdCheck"
+	UserService_NotificationsAdd_FullMethodName  = "/user.UserService/NotificationsAdd"
+	UserService_NotificationsGet_FullMethodName  = "/user.UserService/NotificationsGet"
+	UserService_NotificationsPut_FullMethodName  = "/user.UserService/NotificationsPut"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -45,6 +48,9 @@ type UserServiceClient interface {
 	StoreRefreshToken(ctx context.Context, in *StoreRefreshTokenReq, opts ...grpc.CallOption) (*StoreRefreshTokenRes, error)
 	GetByUserId(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*FLResponse, error)
 	IdCheck(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Response, error)
+	NotificationsAdd(ctx context.Context, in *NotificationsAddRequest, opts ...grpc.CallOption) (*NotificationsAddResponse, error)
+	NotificationsGet(ctx context.Context, in *NotificationsGetRequest, opts ...grpc.CallOption) (*NotificationsGetResponse, error)
+	NotificationsPut(ctx context.Context, in *NotificationsPutRequest, opts ...grpc.CallOption) (*NotificationsPutResponse, error)
 }
 
 type userServiceClient struct {
@@ -155,6 +161,36 @@ func (c *userServiceClient) IdCheck(ctx context.Context, in *UserId, opts ...grp
 	return out, nil
 }
 
+func (c *userServiceClient) NotificationsAdd(ctx context.Context, in *NotificationsAddRequest, opts ...grpc.CallOption) (*NotificationsAddResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NotificationsAddResponse)
+	err := c.cc.Invoke(ctx, UserService_NotificationsAdd_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) NotificationsGet(ctx context.Context, in *NotificationsGetRequest, opts ...grpc.CallOption) (*NotificationsGetResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NotificationsGetResponse)
+	err := c.cc.Invoke(ctx, UserService_NotificationsGet_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) NotificationsPut(ctx context.Context, in *NotificationsPutRequest, opts ...grpc.CallOption) (*NotificationsPutResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NotificationsPutResponse)
+	err := c.cc.Invoke(ctx, UserService_NotificationsPut_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -169,6 +205,9 @@ type UserServiceServer interface {
 	StoreRefreshToken(context.Context, *StoreRefreshTokenReq) (*StoreRefreshTokenRes, error)
 	GetByUserId(context.Context, *UserId) (*FLResponse, error)
 	IdCheck(context.Context, *UserId) (*Response, error)
+	NotificationsAdd(context.Context, *NotificationsAddRequest) (*NotificationsAddResponse, error)
+	NotificationsGet(context.Context, *NotificationsGetRequest) (*NotificationsGetResponse, error)
+	NotificationsPut(context.Context, *NotificationsPutRequest) (*NotificationsPutResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -205,6 +244,15 @@ func (UnimplementedUserServiceServer) GetByUserId(context.Context, *UserId) (*FL
 }
 func (UnimplementedUserServiceServer) IdCheck(context.Context, *UserId) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IdCheck not implemented")
+}
+func (UnimplementedUserServiceServer) NotificationsAdd(context.Context, *NotificationsAddRequest) (*NotificationsAddResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NotificationsAdd not implemented")
+}
+func (UnimplementedUserServiceServer) NotificationsGet(context.Context, *NotificationsGetRequest) (*NotificationsGetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NotificationsGet not implemented")
+}
+func (UnimplementedUserServiceServer) NotificationsPut(context.Context, *NotificationsPutRequest) (*NotificationsPutResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NotificationsPut not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -399,6 +447,60 @@ func _UserService_IdCheck_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_NotificationsAdd_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NotificationsAddRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).NotificationsAdd(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_NotificationsAdd_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).NotificationsAdd(ctx, req.(*NotificationsAddRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_NotificationsGet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NotificationsGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).NotificationsGet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_NotificationsGet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).NotificationsGet(ctx, req.(*NotificationsGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_NotificationsPut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NotificationsPutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).NotificationsPut(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_NotificationsPut_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).NotificationsPut(ctx, req.(*NotificationsPutRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -445,6 +547,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "IdCheck",
 			Handler:    _UserService_IdCheck_Handler,
+		},
+		{
+			MethodName: "NotificationsAdd",
+			Handler:    _UserService_NotificationsAdd_Handler,
+		},
+		{
+			MethodName: "NotificationsGet",
+			Handler:    _UserService_NotificationsGet_Handler,
+		},
+		{
+			MethodName: "NotificationsPut",
+			Handler:    _UserService_NotificationsPut_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -51,7 +51,7 @@ func main() {
 
 func NewHandler() *handler.Handler {
 	cfg := config.Load()
-	conn, err := grpc.Dial(cfg.USER_SERVICE, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(cfg.USER_SERVICE, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("error while connecting to authentication service: %v", err)
 	}

@@ -12,7 +12,7 @@ type Config struct {
 	USER_SERVICE  string
 	USER_ROUTER   string
 	DB_HOST       string
-	DB_PORT       int
+	DB_PORT       string
 	DB_PASSWORD   string
 	DB_NAME       string
 	DB_USER       string
@@ -34,7 +34,7 @@ func Load() Config {
 	config.DB_PASSWORD = cast.ToString(Coalesce("DB_PASSWORD", "salom"))
 	config.SIGNING_KEY = cast.ToString(Coalesce("SIGNING_KEY", "989es94sgs6gs9g4sgss"))
 	config.REFRESH_TOKEN = cast.ToString(Coalesce("REFRESH_TOKEN","fghj5$%^&4ghjkFGHJ"))
-	config.DB_PORT = cast.ToInt(Coalesce("DB_PORT", 5432))
+	config.DB_PORT = cast.ToString(Coalesce("DB_PORT", "5432"))
 
 	return config
 }

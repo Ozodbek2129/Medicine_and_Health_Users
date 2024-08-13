@@ -195,3 +195,71 @@ func (u *MedicineUser) IdCheck(req *pb.UserId) (*pb.Response, error) {
 
 	return &pb.Response{B: false}, nil
 }
+
+func (u *MedicineUser) NotificationsAdd(ctx context.Context,req *pb.NotificationsAddRequest)(*pb.NotificationsAddResponse,error){
+	query:=`insert into notification(
+					id, user_id, message, created_at, updated_at
+				)values(
+					$1,$2,$3,$4,$5)`
+
+	id:=uuid.NewString()
+	vaqt:=time.Now().Format("2006/01/02")
+	_,err:=u.db.ExecContext(ctx,query,id,req.UserId,req.Message,vaqt,vaqt)
+	if err!=nil{
+		return nil,err
+	}
+
+	return &pb.NotificationsAddResponse{
+		Message: "Notification yuborildi.",
+	},nil
+}
+
+func (u *MedicineUser) NotificationsGet(ctx context.Context,req *pb.NotificationsGetRequest)(*pb.NotificationsGetResponse,error){
+	query:=`select 
+				message,created_at
+			from
+				notification
+			where
+				user_id=$1`
+
+	rows,err:=u.db.QueryContext(ctx,query,req.UserId)
+	if err!=nil{
+		return nil,err
+	}
+	defer rows.Close()
+
+	var resp pb.NotificationsGetResponse
+
+	for rows.Next() {
+		var notification pb.Notification
+
+		err := rows.Scan(&notification.Message, &notification.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		resp.Notifications = append(resp.Notifications, &notification)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return &resp,nil
+}
+
+func (u *MedicineUser) NotificationsPut(ctx context.Context,req *pb.NotificationsPutRequest)(*pb.NotificationsPutResponse,error){
+	query:=`update 
+				notification
+			set
+				message=$1
+			where
+				user_id=$2 and created_at=$3`
+
+	_,err:=u.db.ExecContext(ctx,query,req.Message,req.UserId,req.CreatedAt)
+	if err!=nil{
+		return nil,err
+	}
+	return &pb.NotificationsPutResponse{
+		Message: "Siz yuborgan notification uzgartirildi >>> "+req.Message,
+	},nil
+}

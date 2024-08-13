@@ -93,3 +93,30 @@ func (ms *MedicineService) IdCheck(ctx context.Context,req *pb.UserId)(*pb.Respo
 	}
 	return resp,nil
 }
+
+func (ms *MedicineService) NotificationsAdd(ctx context.Context,req *pb.NotificationsAddRequest)(*pb.NotificationsAddResponse,error){
+	resp,err:=ms.user.NotificationsAdd(ctx,req)
+	if err!=nil{
+		ms.log.Error(fmt.Sprintf("notificationni qushishda xatolik: %v",err))
+		return nil,err
+	}
+	return resp,nil
+}
+
+func (ms *MedicineService) NotificationsGet(ctx context.Context,req *pb.NotificationsGetRequest)(*pb.NotificationsGetResponse,error){
+	resp,err:=ms.user.NotificationsGet(ctx,req)
+	if err!=nil{
+		ms.log.Error(fmt.Sprintf("notificationni olishda xatolik: %v",err))
+		return nil,err
+	}
+	return resp,nil
+}
+
+func (ms *MedicineService) NotificationsPut(ctx context.Context,req *pb.NotificationsPutRequest)(*pb.NotificationsPutResponse,error){
+	resp,err:=ms.user.NotificationsPut(ctx,req)
+	if err!=nil{
+		ms.log.Error(fmt.Sprintf("notificationni yangilashda xatolik: %v",err))
+		return nil,err
+	}
+	return resp,nil
+}
