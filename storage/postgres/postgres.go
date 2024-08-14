@@ -253,12 +253,13 @@ func (u *MedicineUser) NotificationsPut(ctx context.Context,req *pb.Notification
 			set
 				message=$1
 			where
-				user_id=$2 and created_at=$3`
+				user_id=$2`
 
-	_,err:=u.db.ExecContext(ctx,query,req.Message,req.UserId,req.CreatedAt)
+	_,err:=u.db.ExecContext(ctx,query,req.Message,req.UserId)
 	if err!=nil{
 		return nil,err
 	}
+	fmt.Println(req.CreatedAt)
 	return &pb.NotificationsPutResponse{
 		Message: "Siz yuborgan notification uzgartirildi >>> "+req.Message,
 	},nil
