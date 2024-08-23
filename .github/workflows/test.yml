@@ -18,7 +18,7 @@ jobs:
         with:
           go-version: '1.22.4'
       
-      - name: Install Dep
+      - name: Install Dependencies
         run: go mod download
 
       - name: Build
@@ -32,8 +32,16 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            cd medic
-            git pull
-            sudo docker compose down
-            sudo docker compose up -d
-
+            # Medic loyihasi uchun serverda katalog mavjud yoki yo'qligini tekshirish
+            if [ ! -d "medic" ]; then
+              echo "Project not found. Cloning..."
+              git clone https://github.com/username/medic.git
+              cd medic
+              sudo docker compose up -d
+            else
+              echo "Project exists. Pulling latest changes..."
+              cd medic
+              git pull
+              sudo docker compose down
+              sudo docker compose up -d
+            fi
