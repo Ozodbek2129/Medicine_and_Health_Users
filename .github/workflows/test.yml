@@ -1,0 +1,39 @@
+name: Deploying
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Golang
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.0'
+      
+      - name: Install Dep
+        run: go mod download
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            mkdir medic
+            git pull
+            sudo docker compose down
+            sudo docker compose up -d
+            
