@@ -35,7 +35,7 @@ jobs:
             # Medic loyihasi uchun serverda katalog mavjud yoki yo'qligini tekshirish
             if [ ! -d "Medicine_and_Health_Users" ]; then
               echo "Project not found. Cloning..."
-              git clone git@github.com:Ozodbek2129/Medicine_and_Health_Users.git
+              git clone https://github.com/Ozodbek2129/Medicine_and_Health_Users.git
               cd Medicine_and_Health_Users
               sudo docker compose up -d
             else
