@@ -33,14 +33,14 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             # Medic loyihasi uchun serverda katalog mavjud yoki yo'qligini tekshirish
-            if [ ! -d "medic" ]; then
+            if [ ! -d "Medicine_and_Health_Users" ]; then
               echo "Project not found. Cloning..."
-              git clone https://github.com/username/medic.git
-              cd medic
+              git clone git@github.com:Ozodbek2129/Medicine_and_Health_Users.git
+              cd Medicine_and_Health_Users
               sudo docker compose up -d
             else
               echo "Project exists. Pulling latest changes..."
-              cd medic
+              cd Medicine_and_Health_Users
               git pull
               sudo docker compose down
               sudo docker compose up -d
