@@ -16,7 +16,7 @@ jobs:
       - name: Install Golang
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23.0'
+          go-version: '1.22.4'
       
       - name: Install Dep
         run: go mod download
